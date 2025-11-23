@@ -1,5 +1,6 @@
 import { Assets, colors, ListHeader, ListRow, Spacing } from 'tosslib';
 import { Product } from '../../services/products';
+import { RECOMMENDED_PRODUCTS_COUNT } from '../../constants/savings';
 
 interface RecommendedProductsProps {
   products: Product[];
@@ -8,7 +9,7 @@ interface RecommendedProductsProps {
 }
 
 export function RecommendedProducts({ products, selectedProduct, onSelectProduct }: RecommendedProductsProps) {
-  const topProducts = [...products].sort((a, b) => b.annualRate - a.annualRate).slice(0, 2);
+  const topProducts = [...products].sort((a, b) => b.annualRate - a.annualRate).slice(0, RECOMMENDED_PRODUCTS_COUNT);
 
   return (
     <>

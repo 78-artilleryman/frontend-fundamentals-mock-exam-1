@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { DEFAULT_SAVING_TERM } from '../constants/savings';
 
 export interface SavingsFormData {
   goalAmount: string;
@@ -17,7 +18,7 @@ interface UseSavingsFormReturn {
 const DEFAULT_FORM_DATA: SavingsFormData = {
   goalAmount: '',
   monthlyAmount: '',
-  savingTerm: 12,
+  savingTerm: DEFAULT_SAVING_TERM,
 };
 
 export const useSavingsForm = (initialData: Partial<SavingsFormData> = {}): UseSavingsFormReturn => {

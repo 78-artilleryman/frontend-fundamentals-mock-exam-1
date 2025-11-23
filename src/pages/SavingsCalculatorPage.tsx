@@ -6,6 +6,7 @@ import { ProductList } from './components/ProductList';
 import { CalculationResult } from './components/CalculationResult';
 import { useToggle } from '../hooks/useToggle';
 import { useSavingsForm } from '../hooks/useSavingsForm';
+import { SAVING_TERM_VALUES } from '../constants/savings';
 
 export function SavingsCalculatorPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -67,9 +68,11 @@ export function SavingsCalculatorPage() {
         value={formData.savingTerm}
         onChange={value => setSavingTerm(value)}
       >
-        <SelectBottomSheet.Option value={6}>6개월</SelectBottomSheet.Option>
-        <SelectBottomSheet.Option value={12}>12개월</SelectBottomSheet.Option>
-        <SelectBottomSheet.Option value={24}>24개월</SelectBottomSheet.Option>
+        {SAVING_TERM_VALUES.map(term => (
+          <SelectBottomSheet.Option key={term} value={term}>
+            {term}개월
+          </SelectBottomSheet.Option>
+        ))}
       </SelectBottomSheet>
 
       <Spacing size={24} />
