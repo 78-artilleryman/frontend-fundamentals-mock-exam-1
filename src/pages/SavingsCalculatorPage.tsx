@@ -1,6 +1,7 @@
 import { Assets, Border, colors, ListRow, NavigationBar, SelectBottomSheet, Spacing, Tab, TextField } from 'tosslib';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getProducts, Product } from '../services/products';
+import { filterProductsByConditions } from '../utils/filterProducts';
 
 export function SavingsCalculatorPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -24,6 +25,11 @@ export function SavingsCalculatorPage() {
       setProducts([]);
     };
   }, []);
+
+  // 필터링된 상품 목록
+  const filteredProducts = useMemo(() => {
+    return filterProductsByConditions(products, { monthlyAmount, savingTerm });
+  }, [products, monthlyAmount, savingTerm]);
 
   return (
     <>
@@ -71,7 +77,7 @@ export function SavingsCalculatorPage() {
         </Tab.Item>
       </Tab>
 
-      {products.map(product => (
+      {filteredProducts.map(product => (
         <ListRow
           key={product.id}
           contents={
