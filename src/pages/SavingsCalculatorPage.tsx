@@ -5,14 +5,13 @@ import { filterProductsByConditions } from '../utils/filterProducts';
 import { ProductList } from './components/ProductList';
 import { CalculationResult } from './components/CalculationResult';
 import { useToggle } from '../hooks/useToggle';
+import { useSavingsForm } from '../hooks/useSavingsForm';
 
 export function SavingsCalculatorPage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [goalAmount, setGoalAmount] = useState('');
-  const [monthlyAmount, setMonthlyAmount] = useState('');
-  const [savingTerm, setSavingTerm] = useState(12);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+  const { formData, setGoalAmount, setMonthlyAmount, setSavingTerm } = useSavingsForm();
   const { value: showResults, setToggle: setShowResults } = useToggle(false);
 
   useEffect(() => {
@@ -34,8 +33,11 @@ export function SavingsCalculatorPage() {
 
   // 필터링된 상품 목록
   const filteredProducts = useMemo(() => {
-    return filterProductsByConditions(products, { monthlyAmount, savingTerm });
-  }, [products, monthlyAmount, savingTerm]);
+    return filterProductsByConditions(products, {
+      monthlyAmount: formData.monthlyAmount,
+      savingTerm: formData.savingTerm,
+    });
+  }, [products, formData.monthlyAmount, formData.savingTerm]);
 
   return (
     <>
@@ -47,7 +49,7 @@ export function SavingsCalculatorPage() {
         label="목표 금액"
         placeholder="목표 금액을 입력하세요"
         suffix="원"
-        value={goalAmount}
+        value={formData.goalAmount}
         onChange={e => setGoalAmount(e.target.value)}
       />
       <Spacing size={16} />
@@ -55,14 +57,14 @@ export function SavingsCalculatorPage() {
         label="월 납입액"
         placeholder="희망 월 납입액을 입력하세요"
         suffix="원"
-        value={monthlyAmount}
+        value={formData.monthlyAmount}
         onChange={e => setMonthlyAmount(e.target.value)}
       />
       <Spacing size={16} />
       <SelectBottomSheet
         label="저축 기간"
         title="저축 기간을 선택해주세요"
-        value={savingTerm}
+        value={formData.savingTerm}
         onChange={value => setSavingTerm(value)}
       >
         <SelectBottomSheet.Option value={6}>6개월</SelectBottomSheet.Option>
@@ -86,9 +88,9 @@ export function SavingsCalculatorPage() {
       {showResults ? (
         <CalculationResult
           selectedProduct={selectedProduct}
-          goalAmount={goalAmount}
-          monthlyAmount={monthlyAmount}
-          savingTerm={savingTerm}
+          goalAmount={formData.goalAmount}
+          monthlyAmount={formData.monthlyAmount}
+          savingTerm={formData.savingTerm}
           filteredProducts={filteredProducts}
           onSelectProduct={setSelectedProduct}
         />
