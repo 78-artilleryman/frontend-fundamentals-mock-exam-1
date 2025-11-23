@@ -4,6 +4,7 @@ import { getProducts, Product } from '../services/products';
 import { filterProductsByConditions } from '../utils/filterProducts';
 import { ProductList } from './components/ProductList';
 import { CalculationResult } from './components/CalculationResult';
+import { useToggle } from '../hooks/useToggle';
 
 export function SavingsCalculatorPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -11,7 +12,8 @@ export function SavingsCalculatorPage() {
   const [monthlyAmount, setMonthlyAmount] = useState('');
   const [savingTerm, setSavingTerm] = useState(12);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [activeTab, setActiveTab] = useState<'products' | 'results'>('products');
+
+  const { value: showResults, setToggle: setShowResults } = useToggle(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -72,28 +74,28 @@ export function SavingsCalculatorPage() {
       <Border height={16} />
       <Spacing size={8} />
 
-      <Tab onChange={value => setActiveTab(value as 'products' | 'results')}>
-        <Tab.Item value="products" selected={activeTab === 'products'}>
+      <Tab onChange={value => setShowResults(value === 'results')}>
+        <Tab.Item value="products" selected={!showResults}>
           적금 상품
         </Tab.Item>
-        <Tab.Item value="results" selected={activeTab === 'results'}>
+        <Tab.Item value="results" selected={showResults}>
           계산 결과
         </Tab.Item>
       </Tab>
 
-      {activeTab === 'products' ? (
-        <ProductList
-          products={filteredProducts}
-          selectedProduct={selectedProduct}
-          onSelectProduct={setSelectedProduct}
-        />
-      ) : (
+      {showResults ? (
         <CalculationResult
           selectedProduct={selectedProduct}
           goalAmount={goalAmount}
           monthlyAmount={monthlyAmount}
           savingTerm={savingTerm}
           filteredProducts={filteredProducts}
+          onSelectProduct={setSelectedProduct}
+        />
+      ) : (
+        <ProductList
+          products={filteredProducts}
+          selectedProduct={selectedProduct}
           onSelectProduct={setSelectedProduct}
         />
       )}
