@@ -1,46 +1,73 @@
-import { Border, colors, ListRow, Spacing } from 'tosslib';
+import { Border, colors, ListHeader, ListRow, Spacing } from 'tosslib';
+import { Product } from '../../services/products';
+import { calculateSavings } from '../../utils/calculateSavings';
 
-export function CalculationResult() {
+interface CalculationResultProps {
+  selectedProduct: Product | null;
+  goalAmount: string;
+  monthlyAmount: string;
+  savingTerm: number;
+}
+
+export function CalculationResult({ selectedProduct, goalAmount, monthlyAmount, savingTerm }: CalculationResultProps) {
+  const goalAmountNum = Number(goalAmount) || 0;
+  const monthlyAmountNum = Number(monthlyAmount) || 0;
+
+  const { expectedAmount, differenceFromGoal, recommendedMonthlyAmount } = calculateSavings({
+    product: selectedProduct,
+    monthlyAmount: monthlyAmountNum,
+    savingTerm,
+    goalAmount: goalAmountNum,
+  });
+
   return (
     <>
       <Spacing size={8} />
-      <ListRow
-        contents={
-          <ListRow.Texts
-            type="2RowTypeA"
-            top="예상 수익 금액"
-            topProps={{ color: colors.grey600 }}
-            bottom={`1,000,000원`}
-            bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
-          />
-        }
-      />
-      <ListRow
-        contents={
-          <ListRow.Texts
-            type="2RowTypeA"
-            top="목표 금액과의 차이"
-            topProps={{ color: colors.grey600 }}
-            bottom={`-500,000원`}
-            bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
-          />
-        }
-      />
-      <ListRow
-        contents={
-          <ListRow.Texts
-            type="2RowTypeA"
-            top="추천 월 납입 금액"
-            topProps={{ color: colors.grey600 }}
-            bottom={`100,000원`}
-            bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
-          />
-        }
-      />
 
+      {!selectedProduct && <ListRow contents={<ListRow.Texts type="1RowTypeA" top="상품을 선택해주세요." />} />}
+      {selectedProduct && (
+        <>
+          <ListRow
+            contents={
+              <ListRow.Texts
+                type="2RowTypeA"
+                top="예상 수익 금액"
+                topProps={{ color: colors.grey600 }}
+                bottom={`${Math.floor(expectedAmount).toLocaleString()}원`}
+                bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
+              />
+            }
+          />
+          <ListRow
+            contents={
+              <ListRow.Texts
+                type="2RowTypeA"
+                top="목표 금액과의 차이"
+                topProps={{ color: colors.grey600 }}
+                bottom={`${Math.floor(differenceFromGoal).toLocaleString()}원`}
+                bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
+              />
+            }
+          />
+          <ListRow
+            contents={
+              <ListRow.Texts
+                type="2RowTypeA"
+                top="추천 월 납입 금액"
+                topProps={{ color: colors.grey600 }}
+                bottom={`${recommendedMonthlyAmount.toLocaleString()}원`}
+                bottomProps={{ fontWeight: 'bold', color: colors.blue600 }}
+              />
+            }
+          />
+        </>
+      )}
       <Spacing size={8} />
       <Border height={16} />
       <Spacing size={8} />
+
+      <ListHeader title={<ListHeader.TitleParagraph fontWeight="bold">추천 상품 목록</ListHeader.TitleParagraph>} />
+      <Spacing size={12} />
 
       <ListRow
         contents={

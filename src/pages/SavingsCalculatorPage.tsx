@@ -88,7 +88,12 @@ export function SavingsCalculatorPage() {
           onSelectProduct={setSelectedProduct}
         />
       ) : (
-        <CalculationResult />
+        <CalculationResult
+          selectedProduct={selectedProduct}
+          goalAmount={goalAmount}
+          monthlyAmount={monthlyAmount}
+          savingTerm={savingTerm}
+        />
       )}
     </>
   );
