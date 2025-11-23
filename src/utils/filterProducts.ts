@@ -5,7 +5,10 @@ interface FilterConditions {
   savingTerm: number;
 }
 
-export const filterProductsByConditions = (products: Product[], conditions: FilterConditions): Product[] => {
+export const filterProductsByConditions = (products: Product[] | null, conditions: FilterConditions): Product[] => {
+  if (!products) {
+    return [];
+  }
   const { monthlyAmount, savingTerm } = conditions;
 
   return products.filter(product => {

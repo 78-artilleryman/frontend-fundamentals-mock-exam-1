@@ -1,44 +1,38 @@
 import { Border, NavigationBar, SelectBottomSheet, Spacing, Tab, TextField } from 'tosslib';
-import { useEffect, useMemo, useState } from 'react';
-import { getProducts, Product } from '../services/products';
+import { useMemo, useState } from 'react';
+import { Product } from '../services/products';
 import { filterProductsByConditions } from '../utils/filterProducts';
 import { ProductList } from './components/ProductList';
 import { CalculationResult } from './components/CalculationResult';
 import { useToggle } from '../hooks/useToggle';
 import { useSavingsForm } from '../hooks/useSavingsForm';
 import { SAVING_TERM_VALUES } from '../constants/savings';
+import useGet from '../hooks/useGet';
 
 export function SavingsCalculatorPage() {
-  const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
+  const { data, loading, error } = useGet<Product[]>('/api/savings-products');
   const { formData, setGoalAmount, setMonthlyAmount, setSavingTerm } = useSavingsForm();
   const { value: showResults, setToggle: setShowResults } = useToggle(false);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await getProducts();
-        setProducts(response);
-      } catch (error) {
-        console.error('상품 데이터를 불러오는데 실패했습니다:', error);
-      }
-    };
-
-    fetchProducts();
-
-    return () => {
-      setProducts([]);
-    };
-  }, []);
-
   // 필터링된 상품 목록
   const filteredProducts = useMemo(() => {
-    return filterProductsByConditions(products, {
+    return filterProductsByConditions(data, {
       monthlyAmount: formData.monthlyAmount,
       savingTerm: formData.savingTerm,
     });
-  }, [products, formData.monthlyAmount, formData.savingTerm]);
+  }, [data, formData.monthlyAmount, formData.savingTerm]);
+
+  // TODO: 로딩 상태 UI 구현
+  if (loading) {
+    return <></>;
+  }
+
+  // TODO: 에러 상태 UI 구현
+  if (error) {
+    return <></>;
+  }
 
   return (
     <>
